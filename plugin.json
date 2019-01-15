@@ -1,0 +1,17 @@
+{
+    "url": "https://github.com/NodeBB/nodebb-plugin-webhooks",
+    "library": "./index.js",
+    "staticDirs": {
+        "public": "public"
+    },
+    "hooks": [
+        { "hook": "static:app.load", "method": "init"},
+
+        { "hook": "filter:admin.header.build", "method": "admin.menu"},
+        { "hook": "action:plugins.firehook", "method": "onHookFired" }
+    ],
+    "templates": "./public/templates",
+    "acpScripts": [
+        "public/admin.js"
+    ]
+}

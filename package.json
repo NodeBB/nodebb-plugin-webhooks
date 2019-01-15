@@ -1,0 +1,31 @@
+{
+  "name": "nodebb-plugin-webhooks",
+  "version": "1.0.0",
+  "description": "A Plugin that pings end points when a hook is triggered",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NodeBB/nodebb-plugin-webhooks"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodebb",
+    "plugin",
+    "reports"
+  ],
+  "author": "Baris Usakli <baris@nodebb.org>",
+  "license": "MIT",
+  "dependencies": {
+    "validator": "10.9.0"
+  },
+  "devDependencies": {
+    "eslint": "5.9.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "2.14.0"
+  },
+  "nbbpm": {
+    "compatibility": "^1.0.0"
+  }
+}
