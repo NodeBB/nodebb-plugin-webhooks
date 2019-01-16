@@ -23,7 +23,7 @@ async function renderAdmin(req, res, next) {
 		const hooks = await getHooks();
 		res.render('admin/plugins/webhooks', { hooks: hooks });
 	} catch (err) {
-		return next(err);
+		next(err);
 	}
 }
 
