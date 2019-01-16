@@ -7,6 +7,7 @@
 					<tr>
 						<th>Hook Name</th>
 						<th>End Point</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody id="hooks-parent">
@@ -15,8 +16,11 @@
 						<td class="col-md-3">
 							<input class="hook-name form-control" value="{hooks.name}" />
 						</td>
-						<td class="col-md-9">
+						<td class="col-md-8">
 							<input class="hook-endpoint form-control" value="{hooks.endpoint}" />
+						</td>
+						<td class="col-md-1">
+							<button class="hook-remove btn btn-danger">Remove</button>
 						</td>
 					</tr>
 					<!-- END hooks -->

@@ -1,9 +1,10 @@
+/* globals app, $, socket, document */
+
 'use strict';
 
 $(document).ready(function () {
-
 	$('#add-hook').on('click', function () {
-		app.parseAndTranslate('admin/plugins/webhooks', 'hooks', { hooks: [{name: 'action:**.**', endpoint: 'https://yourendpoint.com'}] }, function (html) {
+		app.parseAndTranslate('admin/plugins/webhooks', 'hooks', { hooks: [{ name: 'action:**.**', endpoint: 'https://yourendpoint.com' }] }, function (html) {
 			$('#hooks-parent').append(html);
 		});
 	});
@@ -22,5 +23,9 @@ $(document).ready(function () {
 			}
 			app.alertSuccess('Hooks Saved!');
 		});
+	});
+
+	$('#hooks-parent').on('click', '.hook-remove', function () {
+		$(this).parent().parent().remove();
 	});
 });

@@ -1,30 +1,57 @@
 
 'use strict';
 
-const validator = require('validator');
+const request = require('request');
+
 const db = require.main.require('./src/database').async;
 const routeHelpers = require.main.require('./src/routes/helpers');
 const socketAdmin = require.main.require('./src/socket.io/admin');
+const pubsub = require.main.require('./src/pubsub');
 
 const plugin = module.exports;
 
-plugin.init = function (params, callback) {
-	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', params.middleware, [], renderAdmin);
+let hooks = [];
 
+plugin.init = async function (params, callback) {
+	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', params.middleware, [], renderAdmin);
+	hooks = await getHooks();
 	setImmediate(callback);
 };
 
 async function renderAdmin(req, res, next) {
 	try {
-		res.render('admin/plugins/webhooks', { });
+		const hooks = await getHooks();
+		res.render('admin/plugins/webhooks', { hooks: hooks });
 	} catch (err) {
 		return next(err);
 	}
 }
 
-plugin.onHookFired = function (hookData) {
+async function getHooks() {
+	const data = await db.get('nodebb-plugin-webhooks');
+	return JSON.parse(data || '[]');
+}
 
+plugin.onHookFired = function (hookData) {
+	hooks.forEach(function (hook) {
+		if (hook.name === hookData.hook) {
+			makeRequest(hook.endpoint, hookData.params);
+		}
+	});
 };
+
+function makeRequest(endpoint, params) {
+	request.post(endpoint, {
+		form: params,
+	}, function (err, res, body) {
+		if (err) {
+			console.error(err);
+		}
+		if (res.statusCode !== 200) {
+			console.error(res.statusCode, body);
+		}
+	});
+}
 
 plugin.admin = {};
 
@@ -40,6 +67,13 @@ plugin.admin.menu = function (menu, callback) {
 
 
 socketAdmin.plugins.webhooks = {};
-socketAdmin.plugins.webhooks.save = function(socket, data, callback) {
+socketAdmin.plugins.webhooks.save = async function (socket, data, callback) {
+	await db.set('nodebb-plugin-webhooks', JSON.stringify(data));
+	hooks = data;
+	pubsub.publish('nodebb-plugin-webhooks:save', data);
 	callback();
 };
+
+pubsub.on('nodebb-plugin-webhooks:save', function (data) {
+	hooks = data;
+});
