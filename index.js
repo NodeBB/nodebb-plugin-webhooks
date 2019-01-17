@@ -47,7 +47,7 @@ function makeRequest(endpoint, params) {
 		if (err) {
 			console.error(err);
 		}
-		if (res.statusCode !== 200) {
+		if (res && res.statusCode !== 200) {
 			console.error(res.statusCode, body);
 		}
 	});
