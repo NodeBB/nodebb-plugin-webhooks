@@ -1,6 +1,7 @@
 <div class="row">
 	<div class="col-lg-12">
 		<h4>Webhooks</h4>
+		<p>Click <a target="_blank" href="https://github.com/NodeBB/NodeBB/wiki/Hooks">here</a> for available hooks.</p>
 		<div class="table-responsive">
 			<table class="table table-striped">
 				<thead>
