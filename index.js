@@ -45,10 +45,10 @@ function makeRequest(endpoint, params) {
 		form: params,
 	}, function (err, res, body) {
 		if (err) {
-			console.error(err);
+			console.error('[nodebb-plugin-webhooks]', err);
 		}
 		if (res && res.statusCode !== 200) {
-			console.error(res.statusCode, body);
+			console.error('[nodebb-plugin-webhooks]', res.statusCode, body);
 		}
 	});
 }
