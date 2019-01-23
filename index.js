@@ -43,6 +43,8 @@ plugin.onHookFired = function (hookData) {
 function makeRequest(endpoint, params) {
 	request.post(endpoint, {
 		form: params,
+		timeout: 2500,
+		followAllRedirects: true,
 	}, function (err, res, body) {
 		if (err) {
 			console.error('[nodebb-plugin-webhooks]', err);
