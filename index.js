@@ -2,6 +2,8 @@
 'use strict';
 
 const request = require('request');
+const async = require('async');
+const _ = require('lodash');
 
 const db = require.main.require('./src/database').async;
 const routeHelpers = require.main.require('./src/routes/helpers');
@@ -33,16 +35,18 @@ async function getHooks() {
 }
 
 plugin.onHookFired = function (hookData) {
-	hooks.forEach(function (hook) {
+	async.eachSeries(hooks, function (hook, next) {
 		if (hook.name === hookData.hook) {
-			makeRequest(hook.endpoint, hookData.params);
+			makeRequest(hook.endpoint, hookData.params, next);
+		} else {
+			setImmediate(next);
 		}
 	});
 };
 
 function makeRequest(endpoint, params) {
 	request.post(endpoint, {
-		form: params,
+		form: _.cloneDeep(params),
 		timeout: 2500,
 		followAllRedirects: true,
 	}, function (err, res, body) {
