@@ -44,7 +44,7 @@ plugin.onHookFired = function (hookData) {
 	});
 };
 
-function makeRequest(endpoint, params) {
+function makeRequest(endpoint, params, callback) {
 	request.post(endpoint, {
 		form: _.cloneDeep(params),
 		timeout: 2500,
@@ -56,6 +56,7 @@ function makeRequest(endpoint, params) {
 		if (res && res.statusCode !== 200) {
 			console.error('[nodebb-plugin-webhooks]', res.statusCode, body);
 		}
+		callback();
 	});
 }
 
