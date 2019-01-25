@@ -3,7 +3,6 @@
 
 const request = require('request');
 const async = require('async');
-const _ = require('lodash');
 
 const db = require.main.require('./src/database').async;
 const routeHelpers = require.main.require('./src/routes/helpers');
@@ -46,7 +45,7 @@ plugin.onHookFired = function (hookData) {
 
 function makeRequest(endpoint, params, callback) {
 	request.post(endpoint, {
-		form: _.cloneDeep(params),
+		form: params,
 		timeout: 2500,
 		followAllRedirects: true,
 	}, function (err, res, body) {
