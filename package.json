@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-webhooks",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A Plugin that pings end points when a hook is triggered",
   "main": "index.js",
   "repository": {
