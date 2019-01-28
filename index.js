@@ -36,16 +36,16 @@ async function getHooks() {
 plugin.onHookFired = function (hookData) {
 	async.eachSeries(hooks, function (hook, next) {
 		if (hook.name === hookData.hook) {
-			makeRequest(hook.endpoint, hookData.params, next);
+			makeRequest(hook.endpoint, hookData, next);
 		} else {
 			setImmediate(next);
 		}
 	});
 };
 
-function makeRequest(endpoint, params, callback) {
+function makeRequest(endpoint, hookData, callback) {
 	request.post(endpoint, {
-		form: params,
+		form: hookData,
 		timeout: 2500,
 		followAllRedirects: true,
 	}, function (err, res, body) {
