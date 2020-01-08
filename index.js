@@ -4,7 +4,7 @@
 const request = require('request');
 const async = require('async');
 
-const db = require.main.require('./src/database').async;
+const db = require.main.require('./src/database');
 const routeHelpers = require.main.require('./src/routes/helpers');
 const socketAdmin = require.main.require('./src/socket.io/admin');
 const pubsub = require.main.require('./src/pubsub');
@@ -13,10 +13,9 @@ const plugin = module.exports;
 
 let hooks = [];
 
-plugin.init = async function (params, callback) {
+plugin.init = async function (params) {
 	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', params.middleware, [], renderAdmin);
 	hooks = await getHooks();
-	setImmediate(callback);
 };
 
 async function renderAdmin(req, res, next) {
@@ -73,11 +72,10 @@ plugin.admin.menu = function (menu, callback) {
 
 
 socketAdmin.plugins.webhooks = {};
-socketAdmin.plugins.webhooks.save = async function (socket, data, callback) {
+socketAdmin.plugins.webhooks.save = async function (socket, data) {
 	await db.set('nodebb-plugin-webhooks', JSON.stringify(data));
 	hooks = data;
 	pubsub.publish('nodebb-plugin-webhooks:save', data);
-	callback();
 };
 
 pubsub.on('nodebb-plugin-webhooks:save', function (data) {
