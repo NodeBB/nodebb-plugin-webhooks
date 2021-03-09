@@ -1,3 +1,18 @@
+<form role="form" class="webhooks-settings">
+	<div class="row">
+		<div class="col-sm-2 col-xs-12 settings-header">Security</div>
+		<div class="col-sm-10 col-xs-12">
+			<div class="form-group">
+				<label for="secret">Signature Verification Secret</label>
+				<input type="text" id="secret" name="secret" title="Signature Verification Secret" class="form-control" placeholder="mye3cr37p@55w0r[)">
+				<p class="help-block">
+					If set, then a header <code>x-webhook-signature</code> will be sent with the web hook. The value of this header is a `sha1` HMAC of the payload. To verify that the payload sender is authenticated, run the HMAC with this shared secret and ensure the hashes match.
+				</p>
+			</div>
+		</div>
+	</div>
+</form>
+
 <div class="row">
 	<div class="col-lg-12">
 		<h4>Webhooks</h4>
@@ -30,7 +45,10 @@
 		</div>
 		<div class="pull-right">
 			<button id="add-hook" class="btn btn-success"><i class="fa fa-plus"></i> Add Hook</button>
-			<button id="save" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
 		</div>
 	</div>
 </div>
+
+<button id="save" class="floating-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+	<i class="material-icons">save</i>
+</button>
