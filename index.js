@@ -3,9 +3,12 @@
 
 const request = require('request');
 const async = require('async');
+const crypto = require('crypto');
 
 const db = require.main.require('./src/database');
+const meta = require.main.require('./src/meta');
 const routeHelpers = require.main.require('./src/routes/helpers');
+const apiHelpers = require.main.require('./src/api/helpers');
 const socketAdmin = require.main.require('./src/socket.io/admin');
 const pubsub = require.main.require('./src/pubsub');
 
@@ -32,21 +35,50 @@ async function getHooks() {
 	return JSON.parse(data || '[]');
 }
 
-plugin.onHookFired = function (hookData) {
+plugin.onHookFired = async function (hookData) {
+	const { secret } = await meta.settings.get('webhooks');
+	hookData = cleanPayload(hookData);
+
 	async.eachSeries(hooks, function (hook, next) {
 		if (hook.name === hookData.hook) {
-			makeRequest(hook.endpoint, hookData, next);
+			let signature;
+			if (secret) {
+				const hash = crypto.createHmac('sha1', secret);
+				hash.update(JSON.stringify(hookData));
+				signature = `sha1=${hash.digest('hex')}`;
+			}
+			makeRequest(hook.endpoint, hookData, signature, next);
 		} else {
 			setImmediate(next);
 		}
 	});
 };
 
-function makeRequest(endpoint, hookData, callback) {
+function cleanPayload(data) {
+	if (data.params) {
+		['req', 'socket'].forEach((prop) => {
+			if (data.params.hasOwnProperty(prop)) {
+				data.params[prop] = apiHelpers.buildReqObject(data.params[prop]);
+			}
+		});
+
+		if (data.params.hasOwnProperty('res')) {
+			delete data.params.res;
+		}
+	}
+
+	return data;
+}
+
+function makeRequest(endpoint, hookData, signature, callback) {
+	const headers = signature && { 'x-webhook-signature': signature };
+
 	request.post(endpoint, {
-		form: hookData,
+		body: hookData,
 		timeout: 2500,
 		followAllRedirects: true,
+		headers,
+		json: true,
 	}, function (err, res, body) {
 		if (err) {
 			console.error('[nodebb-plugin-webhooks]', err);

@@ -2,7 +2,7 @@
 
 'use strict';
 
-define('admin/plugins/webhooks', function () {
+define('admin/plugins/webhooks', ['settings'], function (settings) {
 	var WebHooks = {};
 
 	WebHooks.init = function () {
@@ -12,6 +12,7 @@ define('admin/plugins/webhooks', function () {
 			});
 		});
 
+		settings.load('webhooks', $('.webhooks-settings'));
 		$('#save').on('click', function () {
 			var data = [];
 			$('#hooks-parent tr').each(function () {
@@ -26,12 +27,23 @@ define('admin/plugins/webhooks', function () {
 				}
 				app.alertSuccess('Hooks Saved!');
 			});
+			saveSettings();
 		});
 
 		$('#hooks-parent').on('click', '.hook-remove', function () {
 			$(this).parent().parent().remove();
 		});
 	};
+
+	function saveSettings() {
+		settings.save('webhooks', $('.webhooks-settings'), function () {
+			app.alert({
+				type: 'success',
+				alert_id: 'webhooks-saved',
+				title: 'Settings Saved',
+			});
+		});
+	}
 
 	return WebHooks;
 });
