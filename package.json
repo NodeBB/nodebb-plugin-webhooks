@@ -19,7 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "async": "2.6.1",
-    "request": "2.88.0"
+    "request": "2.88.0",
+    "request-promise-native": "^1.0.9"
   },
   "devDependencies": {
     "eslint": "5.9.0",

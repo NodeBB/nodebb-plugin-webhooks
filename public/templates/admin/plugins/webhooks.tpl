@@ -9,6 +9,16 @@
 					If set, then a header <code>x-webhook-signature</code> will be sent with the web hook. The value of this header is a `sha1` HMAC of the payload. To verify that the payload sender is authenticated, run the HMAC with this shared secret and ensure the hashes match.
 				</p>
 			</div>
+
+			<div class="checkbox">
+				<label for="noStrictSSL" class="mdl-switch mdl-js-switch mdl-js-ripple-effect">
+					<input type="checkbox" class="mdl-switch__input" id="noStrictSSL" name="noStrictSSL">
+					<span class="mdl-switch__label"><strong>Disable strict verification of SSL certificates</strong></span>
+					<p class="help-block">
+						This is helpful if you are testing with a self-signed certificate. It is <strong>not recommended</strong> for you to leave this option checked in production.
+					</p>
+				</label>
+			</div>
 		</div>
 	</div>
 </form>
