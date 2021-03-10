@@ -21,29 +21,27 @@ define('admin/plugins/webhooks', ['settings'], function (settings) {
 					endpoint: $(this).find('.hook-endpoint').val(),
 				});
 			});
-			socket.emit('admin.plugins.webhooks.save', data, function (err) {
-				if (err) {
-					return app.alertError(err);
-				}
-				app.alertSuccess('Hooks Saved!');
-			});
-			saveSettings();
+
+			Promise.all([
+				new Promise((resolve, reject) => {
+					socket.emit('admin.plugins.webhooks.save', data, err => (!err ? resolve() : reject(err)));
+				}),
+				new Promise((resolve, reject) => {
+					settings.save('webhooks', $('.webhooks-settings'), err => (!err ? resolve() : reject(err)));
+				}),
+			]).then(() => {
+				app.alert({
+					type: 'success',
+					alert_id: 'webhooks-saved',
+					title: 'Settings Saved',
+				});
+			}).catch(app.alertError);
 		});
 
 		$('#hooks-parent').on('click', '.hook-remove', function () {
 			$(this).parent().parent().remove();
 		});
 	};
-
-	function saveSettings() {
-		settings.save('webhooks', $('.webhooks-settings'), function () {
-			app.alert({
-				type: 'success',
-				alert_id: 'webhooks-saved',
-				title: 'Settings Saved',
-			});
-		});
-	}
 
 	return WebHooks;
 });
