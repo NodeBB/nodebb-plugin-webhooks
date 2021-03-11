@@ -1,10 +1,11 @@
 
 'use strict';
 
-const request = require('request');
+const request = require('request-promise-native');
 const async = require('async');
 const crypto = require('crypto');
 
+const winston = require.main.require('winston');
 const db = require.main.require('./src/database');
 const meta = require.main.require('./src/meta');
 const routeHelpers = require.main.require('./src/routes/helpers');
@@ -39,7 +40,7 @@ plugin.onHookFired = async function (hookData) {
 	const { secret } = await meta.settings.get('webhooks');
 	hookData = cleanPayload(hookData);
 
-	async.eachSeries(hooks, function (hook, next) {
+	async.eachSeries(hooks, async (hook) => {
 		if (hook.name === hookData.hook) {
 			let signature;
 			if (secret) {
@@ -47,9 +48,7 @@ plugin.onHookFired = async function (hookData) {
 				hash.update(JSON.stringify(hookData));
 				signature = `sha1=${hash.digest('hex')}`;
 			}
-			makeRequest(hook.endpoint, hookData, signature, next);
-		} else {
-			setImmediate(next);
+			await makeRequest(hook.endpoint, hookData, signature);
 		}
 	});
 };
@@ -70,24 +69,28 @@ function cleanPayload(data) {
 	return data;
 }
 
-function makeRequest(endpoint, hookData, signature, callback) {
+async function makeRequest(endpoint, hookData, signature) {
+	const { noStrictSSL } = await meta.settings.get('webhooks');
 	const headers = signature && { 'x-webhook-signature': signature };
+	const strictSSL = noStrictSSL !== 'on';
 
-	request.post(endpoint, {
-		body: hookData,
-		timeout: 2500,
-		followAllRedirects: true,
-		headers,
-		json: true,
-	}, function (err, res, body) {
-		if (err) {
-			console.error('[nodebb-plugin-webhooks]', err);
+	try {
+		const { statusCode, body } = await request.post(endpoint, {
+			body: hookData,
+			timeout: 2500,
+			followAllRedirects: true,
+			headers,
+			json: true,
+			resolveWithFullResponse: true,
+			strictSSL,
+		});
+
+		if (statusCode !== 200) {
+			winston.error('[nodebb-plugin-webhooks]', statusCode, body);
 		}
-		if (res && res.statusCode !== 200) {
-			console.error('[nodebb-plugin-webhooks]', res.statusCode, body);
-		}
-		callback();
-	});
+	} catch (e) {
+		winston.error('[nodebb-plugin-webhooks]', e.message);
+	}
 }
 
 plugin.admin = {};
