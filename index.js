@@ -86,7 +86,7 @@ async function makeRequest(endpoint, hookData, signature) {
 		});
 
 		if (statusCode !== 200) {
-			winston.error('[nodebb-plugin-webhooks]', statusCode, body);
+			winston.error(`[nodebb-plugin-webhooks] ${statusCode} ${body}`);
 		}
 	} catch (e) {
 		winston.error('[nodebb-plugin-webhooks]', e.message);
