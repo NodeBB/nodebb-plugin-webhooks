@@ -89,7 +89,7 @@ async function makeRequest(endpoint, hookData, signature) {
 			winston.error(`[nodebb-plugin-webhooks] ${statusCode} ${body}`);
 		}
 	} catch (e) {
-		winston.error('[nodebb-plugin-webhooks]', e.message);
+		winston.error(`[nodebb-plugin-webhooks] ${e.message}`);
 	}
 }
 
