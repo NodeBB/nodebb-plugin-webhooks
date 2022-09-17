@@ -11,7 +11,7 @@
         { "hook": "action:plugins.firehook", "method": "onHookFired" }
     ],
     "templates": "./public/templates",
-    "acpScripts": [
-        "public/admin.js"
-    ]
+    "modules": {
+        "../admin/plugins/webhooks.js": "public/admin.js"
+    }
 }
