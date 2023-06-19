@@ -18,7 +18,7 @@
   "author": "Baris Usakli <baris@nodebb.org>",
   "license": "MIT",
   "dependencies": {
-    "async": "2.6.4",
+    "async": "3.2.4",
     "request": "2.88.0",
     "request-promise-native": "^1.0.9"
   },
