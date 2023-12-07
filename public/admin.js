@@ -2,7 +2,7 @@
 
 'use strict';
 
-define('admin/plugins/webhooks', ['settings'], function (settings) {
+define('admin/plugins/webhooks', ['settings', 'alerts'], function (settings, alerts) {
 	var WebHooks = {};
 
 	WebHooks.init = function () {
@@ -30,12 +30,12 @@ define('admin/plugins/webhooks', ['settings'], function (settings) {
 					settings.save('webhooks', $('.webhooks-settings'), err => (!err ? resolve() : reject(err)));
 				}),
 			]).then(() => {
-				app.alert({
+				alerts.alert({
 					type: 'success',
 					alert_id: 'webhooks-saved',
 					title: 'Settings Saved',
 				});
-			}).catch(app.alertError);
+			}).catch(alerts.error);
 		});
 
 		$('#hooks-parent').on('click', '.hook-remove', function () {

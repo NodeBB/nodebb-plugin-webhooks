@@ -1,8 +1,8 @@
 
 'use strict';
 
-const request = require('request-promise-native');
-const async = require('async');
+const https = require('https');
+const axios = require('axios');
 const crypto = require('crypto');
 
 const winston = require.main.require('winston');
@@ -18,17 +18,21 @@ const plugin = module.exports;
 let hooks = [];
 
 plugin.init = async function (params) {
-	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', params.middleware, [], renderAdmin);
+	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', renderAdmin);
 	hooks = await getHooks();
+
+	params.router.post('/sometest', (req, res) => {
+		console.log('got it', req.body);
+		res.json('ok');
+	})
 };
 
-async function renderAdmin(req, res, next) {
-	try {
-		const hooks = await getHooks();
-		res.render('admin/plugins/webhooks', { hooks: hooks });
-	} catch (err) {
-		next(err);
-	}
+async function renderAdmin(req, res) {
+	const hooks = await getHooks();
+	res.render('admin/plugins/webhooks', {
+		title: 'Webhooks',
+		hooks: hooks,
+	});
 }
 
 async function getHooks() {
@@ -40,8 +44,8 @@ plugin.onHookFired = async function (hookData) {
 	const { secret } = await meta.settings.get('webhooks');
 	hookData = cleanPayload(hookData);
 
-	async.eachSeries(hooks, async (hook) => {
-		if (hook.name === hookData.hook) {
+	for (const hook of hooks) {
+		if (hook && hook.name === hookData.hook) {
 			let signature;
 			if (secret) {
 				const hash = crypto.createHmac('sha1', secret);
@@ -50,7 +54,7 @@ plugin.onHookFired = async function (hookData) {
 			}
 			await makeRequest(hook.endpoint, hookData, signature);
 		}
-	});
+	}
 };
 
 function cleanPayload(data) {
@@ -73,20 +77,22 @@ async function makeRequest(endpoint, hookData, signature) {
 	const { noStrictSSL } = await meta.settings.get('webhooks');
 	const headers = signature && { 'x-webhook-signature': signature };
 	const strictSSL = noStrictSSL !== 'on';
+	const axiosOptions = {
+		timeout: 2500,
+		maxRedirects: 10,
+		headers,
+		responseType: 'json',
+	};
 
-	try {
-		const { statusCode, body } = await request.post(endpoint, {
-			body: hookData,
-			timeout: 2500,
-			followAllRedirects: true,
-			headers,
-			json: true,
-			resolveWithFullResponse: true,
-			strictSSL,
+	if (!strictSSL) {
+		axiosOptions.httpsAgent = new https.Agent({
+			rejectUnauthorized: false,
 		});
-
-		if (statusCode !== 200) {
-			winston.error(`[nodebb-plugin-webhooks] ${statusCode} ${body}`);
+	}
+	try {
+		const { status, data } = await axios.post(endpoint, hookData, )
+		if (status !== 200) {
+			winston.error(`[nodebb-plugin-webhooks] ${status} ${data}`);
 		}
 	} catch (e) {
 		winston.error(`[nodebb-plugin-webhooks] ${e.message}`);
