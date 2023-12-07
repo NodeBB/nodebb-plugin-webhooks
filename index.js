@@ -20,11 +20,6 @@ let hooks = [];
 plugin.init = async function (params) {
 	routeHelpers.setupAdminPageRoute(params.router, '/admin/plugins/webhooks', renderAdmin);
 	hooks = await getHooks();
-
-	params.router.post('/sometest', (req, res) => {
-		console.log('got it', req.body);
-		res.json('ok');
-	})
 };
 
 async function renderAdmin(req, res) {
