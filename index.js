@@ -1,4 +1,3 @@
-
 'use strict';
 
 const https = require('https');
@@ -47,6 +46,7 @@ plugin.onHookFired = async function (hookData) {
 				hash.update(JSON.stringify(hookData));
 				signature = `sha1=${hash.digest('hex')}`;
 			}
+			// eslint-disable-next-line no-await-in-loop
 			await makeRequest(hook.endpoint, hookData, signature);
 		}
 	}
@@ -85,7 +85,7 @@ async function makeRequest(endpoint, hookData, signature) {
 		});
 	}
 	try {
-		const { status, data } = await axios.post(endpoint, hookData, )
+		const { status, data } = await axios.post(endpoint, hookData);
 		if (status !== 200) {
 			winston.error(`[nodebb-plugin-webhooks] ${status} ${data}`);
 		}
@@ -105,7 +105,6 @@ plugin.admin.menu = function (menu, callback) {
 
 	setImmediate(callback, null, menu);
 };
-
 
 socketAdmin.plugins.webhooks = {};
 socketAdmin.plugins.webhooks.save = async function (socket, data) {
