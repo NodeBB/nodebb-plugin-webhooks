@@ -85,7 +85,7 @@ async function makeRequest(endpoint, hookData, signature) {
 		});
 	}
 	try {
-		const { status, data } = await axios.post(endpoint, hookData);
+		const { status, data } = await axios.post(endpoint, hookData, axiosOptions);
 		if (status !== 200) {
 			winston.error(`[nodebb-plugin-webhooks] ${status} ${data}`);
 		}
