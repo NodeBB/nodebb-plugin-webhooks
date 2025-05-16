@@ -8,6 +8,7 @@
     "url": "https://github.com/NodeBB/nodebb-plugin-webhooks"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,14 +19,13 @@
   "author": "Baris Usakli <baris@nodebb.org>",
   "license": "MIT",
   "dependencies": {
-    "axios": "1.6.2"
+    "axios": "1.9.0"
   },
   "devDependencies": {
-    "eslint": "8.55.0",
-    "eslint-config-nodebb": "0.2.1",
-    "eslint-plugin-import": "2.29.0"
+    "eslint": "9.26.0",
+    "eslint-config-nodebb": "^1.1.4"
   },
   "nbbpm": {
-    "compatibility": "^3.2.0"
+    "compatibility": "^3.2.0 || ^4.0.0"
   }
 }

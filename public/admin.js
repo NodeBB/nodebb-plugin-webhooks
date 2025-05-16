@@ -1,5 +1,3 @@
-/* globals app, $, socket, define */
-
 'use strict';
 
 define('admin/plugins/webhooks', ['settings', 'alerts'], function (settings, alerts) {
