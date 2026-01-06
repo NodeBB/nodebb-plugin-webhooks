@@ -57,6 +57,9 @@ function cleanPayload(data) {
 		['req', 'socket'].forEach((prop) => {
 			if (data.params.hasOwnProperty(prop)) {
 				data.params[prop] = apiHelpers.buildReqObject(data.params[prop]);
+				if (data.params[prop] && data.params[prop].headers && data.params[prop].headers.hasOwnProperty('cookie')) {
+					delete data.params[prop].headers.cookie;
+				}
 			}
 		});
 
